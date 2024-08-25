@@ -1,10 +1,17 @@
 #pragma once
 #include <cstdarg>
 
+extern void* stderr;
+
 namespace std{
     void putc(char c);
     void puts(const char *str);
     void vprintf(const char *fmt, va_list args);
     void printf(const char *fmt, ...);
+    void fprintf(void* stream, const char* fmt, ...);
     [[noreturn]] void error(const char* fmt, ...);
+}
+
+extern "C" {
+    void fprintf(void* stream, const char* fmt, ...);
 }

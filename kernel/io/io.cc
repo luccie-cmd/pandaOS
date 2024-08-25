@@ -34,4 +34,24 @@ namespace io{
     void panic(const char* str){
         std::error("System critical error: %s\n", str);
     }
+
+    void cli(){
+        __asm__ volatile ("cli");
+    }
+
+    void sti(){
+        __asm__ volatile ("sti");
+    }
+
+    void hlt(){
+        __asm__ volatile ("hlt");
+    }
+
+
+    [[noreturn]] void halt(){
+        cli();
+        hlt();
+        // Failsafe and make the C++ compiler not complain
+        while(1){}
+    }
 }

@@ -10,6 +10,7 @@ import os
 import glob
 import sys
 import subprocess
+import getpass
 from script.util import parseSize, compareFiles
 basename = os.path.basename(os.path.dirname(os.path.realpath(__file__)))
 
@@ -221,7 +222,7 @@ def buildKernel(kernel_dir: str):
             callCmd(f"rm -f /tmp/{basename}/cache/{file}")
             exit(code)
 
-def linkKernel(kernel_dir, linker_file, libc_file):
+def linkKernel(kernel_dir, linker_file, libc_file, lib_dir="./lib"):
     files = glob.glob(kernel_dir+'/**', recursive=True)
     command = CONFIG["compiler"][0]
     if command == "gcc":
@@ -237,9 +238,15 @@ def linkKernel(kernel_dir, linker_file, libc_file):
             continue
         command += " " + file
     command += f" -Wl,-T {linker_file}"
+    command += " -Wl,--no-whole-archive"
+    command += " -Wl,--whole-archive"
     command += f" {libc_file}"
     if CONFIG["config"][0] == "debug":
         command += f" -Wl,-Map={CONFIG['outDir'][0]}/kernel.map"
+    lib_files = glob.glob(lib_dir+'/**')
+    for file in lib_files:
+        if getExtension(file) == 'a':
+            command += f" {file}"
     command += f" -o {CONFIG['outDir'][0]}/kernel.elf"
     callCmd(command, True)
 
@@ -386,16 +393,18 @@ def main():
         exit(1)
     callCmd(f"cp kernel/syscall/syscall.tbl {CONFIG['outDir'][0]}")
     print("> Building LibC")
-    buildLibc("klibc", f"{CONFIG['outDir'][0]}/klibc.a")
+    buildLibc("klibc", f"{CONFIG['outDir'][0]}/libkc.a")
     print("> Building kernel")
     buildKernel("kernel")
     print("> Linking kernel")
-    linkKernel(f"{CONFIG['outDir'][0]}/kernel", "util/kernel.ld", f"{CONFIG['outDir'][0]}/klibc.a")
+    linkKernel(f"{CONFIG['outDir'][0]}/kernel", "util/kernel.ld", f"{CONFIG['outDir'][0]}/libkc.a")
     if "compile" in sys.argv:
         return
     buildImage(f"{CONFIG['outDir'][0]}/image.img", f"limine/bin/BOOTX64.EFI", f"{CONFIG['outDir'][0]}/kernel.elf")
     if "run" in sys.argv:
         callCmd(f"./script/run.sh {CONFIG['outDir'][0]}", True)
+    username = getpass.getuser()
+    callCmd(f"chown -R {username}:{username} ./*")
 
 if __name__ == '__main__':
     main()

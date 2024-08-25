@@ -1,0 +1,9 @@
+#pragma once
+
+namespace std{
+    [[noreturn]] void abort(void) noexcept;
+}
+
+extern "C" {
+    [[noreturn]] void abort(void);
+}

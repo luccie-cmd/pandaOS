@@ -6,6 +6,7 @@
 #include <hal/gdt/gdt.h>
 #include <hal/idt/idt.h>
 #include <cstring>
+#include <dbg/decomp/decompiler.h>
 
 extern void (*__init_array[])();
 extern void (*__init_array_end[])();

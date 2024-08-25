@@ -9,6 +9,8 @@ namespace dbg{
     extern void print(const char* str);
 }
 
+void* stderr = nullptr;
+
 namespace std{
     void putc(char c){
         framebuffer::putc(c);
@@ -252,6 +254,15 @@ namespace std{
         vprintf(fmt, args);
         va_end(args);
     }
+
+    void fprintf(void* stream, const char* fmt, ...){
+        (void)stream;
+        va_list args;
+        va_start(args, fmt);
+        vprintf(fmt, args);
+        va_end(args);
+    }
+
     [[noreturn]] void error(const char* fmt, ...){
         printf("ERROR: ");
         va_list args;
@@ -259,5 +270,15 @@ namespace std{
         vprintf(fmt, args);
         va_end(args);
         while(1){}
+    }
+}
+
+extern "C" {
+    void fprintf(void* stream, const char* fmt, ...){
+        (void)stream;
+        va_list args;
+        va_start(args, fmt);
+        std::vprintf(fmt, args);
+        va_end(args);
     }
 }

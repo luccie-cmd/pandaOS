@@ -6,4 +6,8 @@ namespace io{
     uint64_t cr3();
     void invalCache(void* addr);
     void panic(const char* str);
+    void cli();
+    void sti();
+    void hlt();
+    [[noreturn]] void halt();
 }

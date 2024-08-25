@@ -4,4 +4,17 @@
 namespace std{
     void* memcpy(void* dest, const void* src, std::size_t count);
     void* memset(void* dest, int ch, std::size_t count);
+    int strcmp(const char* str1, const char* str2);
+    std::size_t strlen(const char *str);
+    char *strncat(char *dest, const char *src, std::size_t n);
+    int memcmp(const void *ptr1, const void *ptr2, std::size_t count);
+};
+
+extern "C" {
+    void* memcpy(void* dest, const void* src, size_t count);
+    void* memset(void* dest, int ch, size_t count);
+    int strcmp(const char* str1, const char* str2);
+    size_t strlen(const char *str);
+    char *strncat(char *dest, const char *src, size_t n);
+    int memcmp(const void *ptr1, const void *ptr2, size_t count);
 };
