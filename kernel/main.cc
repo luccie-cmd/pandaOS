@@ -28,6 +28,7 @@ extern "C" void KernelInit(){
     hal::idt::init();
     std::error("Implement ISR\n");
     std::error("Implement ACPI\n");
+    std::error("Implement IRQ\n"); // ACPI's MADT (multiple APIC descriptor table) needs to be read first before initializing the IRQ
     std::error("Implement PCI\n");
     std::error("Implement VFS\n");
     AbiCallCtors();
