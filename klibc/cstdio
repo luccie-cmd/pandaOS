@@ -1,0 +1,10 @@
+#pragma once
+#include <cstdarg>
+
+namespace std{
+    void putc(char c);
+    void puts(const char *str);
+    void vprintf(const char *fmt, va_list args);
+    void printf(const char *fmt, ...);
+    [[noreturn]] void error(const char* fmt, ...);
+}

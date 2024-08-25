@@ -1,0 +1,7 @@
+#pragma once
+#include <cstddef>
+
+namespace std{
+    void* memcpy(void* dest, const void* src, std::size_t count);
+    void* memset(void* dest, int ch, std::size_t count);
+};

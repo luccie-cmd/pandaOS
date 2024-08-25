@@ -1,0 +1,9 @@
+*.old
+tmp.txt
+commands.txt
+*.log
+out/
+build.cc
+limine/
+.vscode/
+__pycache__
