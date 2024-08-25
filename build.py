@@ -94,6 +94,7 @@ if OLD_CONFIG != CONFIG:
     print("Configuration changed, rebuilding...")
 # Add some default values to the config
 CONFIG["CFLAGS"] = ['-Werror', '-c', '-mno-avx512f', '-ffreestanding', '-nostdlib', '-finline-functions', '-fno-pic', '-mno-red-zone', '-fno-stack-protector', '-fno-lto', '-fno-stack-check', '-mno-avx', '-Wall', '-Wextra', "-fmax-errors=1"]
+CONFIG["INCPATHS"] = ['-Ixed', '-Iklibc']
 CONFIG["CXXFLAGS"] = ['-fno-rtti', '-fno-exceptions']
 CONFIG["ASFLAGS"] = ['-felf64']
 CONFIG["LDFLAGS"] = ['-nostdlib', '-mno-avx512f', '-ffreestanding', '-fno-lto', '-no-pie', '-lgcc', '-mno-red-zone', '-fno-stack-protector', '-fno-stack-check', '-mno-avx', '-fno-rtti', '-fno-exceptions']
@@ -185,21 +186,24 @@ def buildASM(file):
 
 def buildKernel(kernel_dir: str):
     files = glob.glob(kernel_dir+'/**', recursive=True)
-    CONFIG["CFLAGS"] += [f"-I{kernel_dir}"]
-    CONFIG["CFLAGS"] += [f"-Iklibc"]
+    CONFIG["INCPATHS"] += [f"-I{kernel_dir}"]
     for file in files:
         if not os.path.isfile(file):
             continue
         if not checkExtension(file, ["c", "cc", "asm"]):
             continue
         basename = os.path.basename(os.path.dirname(os.path.realpath(__file__)))
-        callCmd(f"cpp -I{kernel_dir} -Iklibc {file} -o ./tmp.txt")
+        str_paths = ""
+        for incPath in CONFIG["INCPATHS"]:
+            str_paths += f" {incPath}"
+        callCmd(f"cpp {str_paths} {file} -o ./tmp.txt")
         if not force_rebuild and compareFiles("./tmp.txt", os.path.abspath(f"/tmp/{basename}/cache/{file}")):
             continue
         callCmd(f"mkdir -p {CONFIG['outDir'][0]}/{os.path.dirname(file)}")
         callCmd(f"mkdir -p /tmp/{basename}/cache/{os.path.dirname(file)}")
         callCmd(f"cp ./tmp.txt /tmp/{basename}/cache/{file}")
         code = 0
+        CONFIG["CFLAGS"] += CONFIG["INCPATHS"]
         if getExtension(file) == "c":
             code = buildC(file)
         elif getExtension(file) == "asm":
@@ -209,6 +213,9 @@ def buildKernel(kernel_dir: str):
         else:
             print(f"Invalid or unhandled extension {getExtension(file)}")
             exit(1)
+
+        for incPath in CONFIG["INCPATHS"]:
+            CONFIG["CFLAGS"].remove(incPath)
 
         if code != 0:
             callCmd(f"rm -f /tmp/{basename}/cache/{file}")
@@ -293,26 +300,42 @@ def buildImage(out_file, boot_file, kernel_file):
     mountFs(LOOP_DEVICE, boot_file, kernel_file)
 
 def buildLibc(directory, out_file):
-    CONFIG["CFLAGS"] += [f'-I{directory}']
     os.makedirs(CONFIG["outDir"][0]+'/'+directory, exist_ok=True)
-    files = glob.glob(f"{directory}/**", recursive=True)
+    CONFIG["INCPATHS"] += [f'-I{directory}']
+    files = glob.glob(directory+'/**', recursive=True)
     for file in files:
         if not os.path.isfile(file):
             continue
-        if not checkExtension(file, ["c", "asm", "cc"]):
+        if not checkExtension(file, ["c", "cc", "asm"]):
             continue
         basename = os.path.basename(os.path.dirname(os.path.realpath(__file__)))
-        if not force_rebuild and compareFiles(os.path.abspath(file), os.path.abspath(f"/tmp/{basename}/cache/{file}")):
+        str_paths = ""
+        for incPath in CONFIG["INCPATHS"]:
+            str_paths += f" {incPath}"
+        callCmd(f"cpp {str_paths} {file} -o ./tmp.txt")
+        if not force_rebuild and compareFiles("./tmp.txt", os.path.abspath(f"/tmp/{basename}/cache/{file}")):
             continue
         callCmd(f"mkdir -p {CONFIG['outDir'][0]}/{os.path.dirname(file)}")
         callCmd(f"mkdir -p /tmp/{basename}/cache/{os.path.dirname(file)}")
-        callCmd(f"cp {file} /tmp/{basename}/cache/{file}")
+        callCmd(f"cp ./tmp.txt /tmp/{basename}/cache/{file}")
+        code = 0
+        CONFIG["CFLAGS"] += CONFIG["INCPATHS"]
         if getExtension(file) == "c":
-            buildC(file)
+            code = buildC(file)
         elif getExtension(file) == "asm":
-            buildASM(file)
+            code = buildASM(file)
         elif getExtension(file) == "cc":
-            buildCXX(file)
+            code = buildCXX(file)
+        else:
+            print(f"Invalid or unhandled extension {getExtension(file)}")
+            exit(1)
+
+        for incPath in CONFIG["INCPATHS"]:
+            CONFIG["CFLAGS"].remove(incPath)
+
+        if code != 0:
+            callCmd(f"rm -f /tmp/{basename}/cache/{file}")
+            exit(code)
     
     files = glob.glob(f"{CONFIG['outDir'][0]}/{directory}/**", recursive=True)
     obj_files = []
