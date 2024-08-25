@@ -237,7 +237,7 @@
                 if(type == nullptr){
                     std::error("Invalid limine memmap type `%ld`\n", entry->type);
                 }
-                std::printf("\t%s: %lx -> %lx\n", type, entry->base, entry->base+entry->length);
+                std::printf("\t%20s: 0x%lx -> 0x%lx\n", type, entry->base, entry->base+entry->length);
             }
         }
         uint64_t allocatePage(){

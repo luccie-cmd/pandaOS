@@ -380,6 +380,8 @@ def main():
         callCmd(f"rm -rf {CONFIG['outDir'][0]}")
     if "clean-all" in sys.argv:
         callCmd(f"rm -rf limine")
+        callCmd(f"rm -rf /tmp/{basename}")
+        callCmd(f"rm -rf {CONFIG['outDir'][0]}")
     if force_rebuild:
         print("Rebuilding...")
     print("> Creating necesarry dirs")

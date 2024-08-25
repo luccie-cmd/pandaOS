@@ -165,9 +165,9 @@ namespace framebuffer{
 
     void printInfo(){
         std::printf("Framebuffer info:\n");
-        std::printf("\tWidth: %ld\n", mainFramebuffer->width);
+        std::printf("\tWidth:  %ld\n", mainFramebuffer->width);
         std::printf("\tHeight: %ld\n", mainFramebuffer->height);
-        std::printf("\tbpp: %d\n", mainFramebuffer->bpp);
+        std::printf("\tbpp:    %d\n", mainFramebuffer->bpp);
     }
 
     void setFontSize(int size){

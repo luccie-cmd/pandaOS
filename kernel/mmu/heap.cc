@@ -45,9 +45,9 @@ namespace mmu{
     }
     void printHeapInfo(){
         std::printf("  HEAP:\n");
-        std::printf("\tPhysical memory current size = %ld\n", pmm_size);
-        std::printf("\tVirtual memory max = %ld\n", vmm_max);
-        std::printf("\tVirtual memory base = %lx\n", vmm_base);
+        std::printf("\tPhysical memory current size = 0x%lx\n", pmm_size);
+        std::printf("\tVirtual memory max           = 0x%lx\n", vmm_max);
+        std::printf("\tVirtual memory base          = 0x%lx\n", vmm_base);
     }
     void* allocateMemory(std::size_t size){
         std::size_t allignedLength = (size + 16 - 1) & ~(16 - 1);
