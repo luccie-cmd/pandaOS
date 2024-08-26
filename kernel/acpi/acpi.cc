@@ -88,15 +88,12 @@ namespace acpi{
         uint8_t* entries_start = reinterpret_cast<uint8_t*>(table) + sizeof(MADT);
         uint8_t* entries_end = reinterpret_cast<uint8_t*>(table) + table->sdt.Length;
 
-        std::size_t i = 0;
         uint8_t* current_entry = entries_start;
         while (current_entry < entries_end)
         {
             MADTEntry* entry = reinterpret_cast<MADTEntry*>(current_entry);
             lambda((void*)entry);
             current_entry += entry->entry_length;
-            std::printf("\tLoaded MADT entry %ld\n", i);
-            i++;
         }
     }
     void printInfo(){

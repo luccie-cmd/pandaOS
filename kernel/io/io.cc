@@ -12,7 +12,6 @@ namespace io{
             : "memory"
             );
     }
-
     uint16_t inw(uint16_t port){
         uint16_t ret;
         __asm__ volatile ( "inw %w1, %w0"
@@ -21,7 +20,6 @@ namespace io{
                        : "memory");
         return ret;
     }
-
     uint64_t cr3(){
         uint64_t cr3;
         __asm__ volatile (
@@ -30,7 +28,6 @@ namespace io{
             );
         return cr3;
     }
-
     void invalCache(void* page){
         __asm__ volatile (
             "invlpg (%0)"
@@ -39,24 +36,26 @@ namespace io{
             : "memory"
             );
     }
+    uint64_t rdmsr(uint32_t reg){
+        uint32_t low, high;
+        __asm__ __volatile__ (
+                "rdmsr" : "=a"(low), "=d"(high) : "c"(reg)
+                );
 
+        return (static_cast<uint64_t>(high) << 32) | low;
+    }
     void panic(const char* str){
         std::error("System critical error: %s\n", str);
     }
-
     void cli(){
         __asm__ volatile ("cli");
     }
-
     void sti(){
         __asm__ volatile ("sti");
     }
-
     void hlt(){
         __asm__ volatile ("hlt");
     }
-
-
     [[noreturn]] void halt(){
         cli();
         hlt();

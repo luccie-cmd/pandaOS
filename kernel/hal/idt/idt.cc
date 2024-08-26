@@ -6,6 +6,7 @@ extern "C"
 #include <xed/xed-interface.h>
 }
 #include <dbg/decomp/decompiler.h>
+#include <hal/irq/irq.h>
 
 hal::idt::IDTEntry idtEntries[256];
 

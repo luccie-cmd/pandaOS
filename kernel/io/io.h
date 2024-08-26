@@ -8,6 +8,7 @@ namespace io{
     void outb(uint16_t port, uint8_t value);
     uint16_t inw(uint16_t port);
     uint64_t cr3();
+    uint64_t rdmsr(uint32_t reg);
     void invalCache(void* addr);
     void panic(const char* str);
     void cli();

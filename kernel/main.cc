@@ -5,6 +5,7 @@
 #include <cstdio>
 #include <hal/gdt/gdt.h>
 #include <hal/idt/idt.h>
+#include <hal/irq/irq.h>
 #include <cstring>
 #include <acpi/acpi.h>
 
@@ -21,17 +22,19 @@ void AbiCallCtors()
 
 extern "C" void KernelInit(){
     dbg::print("Booted OS\n");
+    io::cli();
     framebuffer::init();
     framebuffer::printInfo();
     mmu::init();
     mmu::printInfo();
     hal::gdt::init();
     hal::idt::init();
+    io::sti();
     acpi::init();
     acpi::printInfo();
-    std::error("Implement IRQ\n"); // ACPI's MADT (multiple APIC descriptor table) needs to be read first before initializing the IRQ
-    std::error("Implement PCI\n");
+    hal::irq::init();
     std::error("Implement VFS\n");
+    std::error("Implement PCI\n");
     AbiCallCtors();
     std::error("Implement SYSCALLS\n");
     std::error("Implement TSS\n");
