@@ -270,23 +270,22 @@ namespace framebuffer{
         }
         screenX+=(8*fontScale);
         if(screenX >= mainFramebuffer->width){
-            screenX = 0;
-            screenY+=(8*fontScale);
+            screenX = 2;
+            screenY+=(8*fontScale)+2;
         }
         if(screenY >= mainFramebuffer->height){
-            scrollBack((8*fontScale));
-            screenY -= (8*fontScale);
+            scrollBack((8*fontScale)+2);
         }
     }
 
     void putc(char c){
         switch(c){
             case '\n': {
-                screenY += (8*fontScale);
-                screenX = 0;
+                screenY += (8*fontScale)+2;
+                screenX = 2;
             } break;
             case '\r': {
-                screenX = 0;
+                screenX = 2;
             } break;
             case '\t': {
                 for(int i = 0; i < 4; ++i){

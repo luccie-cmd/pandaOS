@@ -13,6 +13,15 @@ namespace io{
             );
     }
 
+    uint16_t inw(uint16_t port){
+        uint16_t ret;
+        __asm__ volatile ( "inw %w1, %w0"
+                       : "=a"(ret)
+                       : "Nd"(port)
+                       : "memory");
+        return ret;
+    }
+
     uint64_t cr3(){
         uint64_t cr3;
         __asm__ volatile (

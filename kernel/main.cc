@@ -6,6 +6,7 @@
 #include <hal/gdt/gdt.h>
 #include <hal/idt/idt.h>
 #include <cstring>
+#include <acpi/acpi.h>
 
 extern void (*__init_array[])();
 extern void (*__init_array_end[])();
@@ -26,7 +27,8 @@ extern "C" void KernelInit(){
     mmu::printInfo();
     hal::gdt::init();
     hal::idt::init();
-    std::error("Implement ACPI\n");
+    acpi::init();
+    acpi::printInfo();
     std::error("Implement IRQ\n"); // ACPI's MADT (multiple APIC descriptor table) needs to be read first before initializing the IRQ
     std::error("Implement PCI\n");
     std::error("Implement VFS\n");

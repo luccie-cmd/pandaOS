@@ -94,7 +94,7 @@ if OLD_CONFIG != CONFIG:
     force_rebuild = True
     print("Configuration changed, rebuilding...")
 # Add some default values to the config
-CONFIG["CFLAGS"] = ['-Werror', '-c', '-mno-avx512f', '-ffreestanding', '-nostdlib', '-finline-functions', '-fno-pic', '-mno-red-zone', '-fno-stack-protector', '-fno-lto', '-fno-stack-check', '-mno-avx', '-Wall', '-Wextra', "-fmax-errors=1"]
+CONFIG["CFLAGS"] = ['-Werror', '-c', '-mno-avx512f', '-ffreestanding', '-nostdlib', '-finline-functions', '-fno-pic', '-mno-red-zone', '-fno-stack-protector', '-fno-lto', '-fno-stack-check', '-mno-avx', '-Wall', '-Wextra']
 CONFIG["INCPATHS"] = ['-Ixed', '-Iklibc']
 CONFIG["CXXFLAGS"] = ['-fno-rtti', '-fno-exceptions']
 CONFIG["ASFLAGS"] = ['-felf64']
@@ -151,7 +151,7 @@ def getExtension(file):
 
 def buildC(file):
     compiler = CONFIG["compiler"][0]
-    options = CONFIG["CFLAGS"]
+    options = CONFIG["CFLAGS"].copy()
     options.append("-std=c11")
     command = compiler + " " + file
     for option in options:
@@ -165,8 +165,8 @@ def buildCXX(file):
     if compiler == "gcc":
         compiler = "g"
     compiler += "++"
-    options = CONFIG["CFLAGS"]
-    options += CONFIG["CXXFLAGS"]
+    options = CONFIG["CFLAGS"].copy()
+    options += CONFIG["CXXFLAGS"].copy()
     options.append("-std=c++23")
     command = compiler + " " + file
     for option in options:
@@ -177,7 +177,7 @@ def buildCXX(file):
 
 def buildASM(file):
     compiler = "nasm"
-    options = CONFIG["ASFLAGS"]
+    options = CONFIG["ASFLAGS"].copy()
     command = compiler + " " + file
     for option in options:
         command += " " + option
@@ -192,6 +192,8 @@ def buildKernel(kernel_dir: str):
         if not os.path.isfile(file):
             continue
         if not checkExtension(file, ["c", "cc", "asm"]):
+            continue
+        if getExtension(file) == "inc" or getExtension(file) == "h":
             continue
         basename = os.path.basename(os.path.dirname(os.path.realpath(__file__)))
         str_paths = ""
@@ -212,7 +214,7 @@ def buildKernel(kernel_dir: str):
         elif getExtension(file) == "cc":
             code = buildCXX(file)
         else:
-            print(f"Invalid or unhandled extension `{getExtension(file)}`")
+            print(f"Invalid or unhandled extension `{getExtension(file)}` on file {file}")
             exit(1)
 
         for incPath in CONFIG["INCPATHS"]:
@@ -249,6 +251,7 @@ def linkKernel(kernel_dir, linker_file, libc_file, lib_dir="./lib"):
             command += f" {file}"
     command += f" -o {CONFIG['outDir'][0]}/kernel.elf"
     callCmd(command, True)
+    callCmd(f"strip -s -g -x -X {CONFIG['outDir'][0]}/kernel.elf -o {CONFIG['outDir'][0]}/kernel.elf")
 
 def makeImageFile(out_file):
     size = parseSize(CONFIG["imageSize"][0])

@@ -63,16 +63,18 @@ namespace hal::idt{
         std::printf("\tLoaded ISR\n");
     }
     void registerHandler(uint8_t idx, void* function, uint8_t type){
-        assert(idx < sizeof(idtEntries)/sizeof(idtEntries[0]));
         idtEntries[idx] = IDT_ENTRY((uint64_t)function, 0x8, type, 0, 0);
     }
     void enableGate(uint8_t idx){
-        assert(idx < sizeof(idtEntries)/sizeof(idtEntries[0]));
         idtEntries[idx].present = 1;
     }
     extern "C" void handleInt(io::Registers* regs){
-        xed_decoded_inst_t xedd;
-        DecompilerDecompileAtRIPRange(&xedd, (const uint8_t*)regs->rip, 32, 32);
+        if(regs->interrupt_number < 32){
+            xed_decoded_inst_t xedd;
+            DecompilerDecompileAtRIPRange(&xedd, (const uint8_t*)regs->rip, 32, 32);
+            std::printf("ERROR: %s\n", exceptions[regs->interrupt_number]);
+            while(1){}
+        }
         std::printf("TODO: Handle int %ld with code %ld\n", regs->interrupt_number, regs->error_code);
         while(1){}
     }
