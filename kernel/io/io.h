@@ -2,6 +2,9 @@
 #include <cstdint>
 
 namespace io{
+    struct Registers{
+        uint64_t cr3, gs, fs, es, ds, r15, r14, r13, r12, r11, r10, r9, r8, rdi, rsi, rbp, rsp, rdx, rcx, rbx, rax, interrupt_number, error_code, rip, cs, rflags, orig_rsp, ss;
+    } __attribute__((packed));
     void outb(std::uint16_t port, std::uint8_t value);
     uint64_t cr3();
     void invalCache(void* addr);

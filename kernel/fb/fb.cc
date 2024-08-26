@@ -159,7 +159,7 @@ namespace framebuffer{
             dbg::print("No framebuffer found\n");
             while (1){}
         }
-        screenX = screenY = 2;
+        screenX = screenY = 0;
         setFontSize(8);
     }
 
@@ -254,7 +254,6 @@ namespace framebuffer{
                 setPixel(x, y, 0, 0, 0);
             }
         }
-        screenY -= lines;
     }
 
     void putchr(char c, uint8_t r, uint8_t g, uint8_t b){
@@ -271,19 +270,20 @@ namespace framebuffer{
         }
         screenX+=(8*fontScale);
         if(screenX >= mainFramebuffer->width){
-            screenX = 2;
-            screenY+=(8*fontScale)+2;
+            screenX = 0;
+            screenY+=(8*fontScale);
         }
         if(screenY >= mainFramebuffer->height){
-            scrollBack((8*fontScale)+2);
+            scrollBack((8*fontScale));
+            screenY -= (8*fontScale);
         }
     }
 
     void putc(char c){
         switch(c){
             case '\n': {
-                screenY += (8*fontScale)+2;
-                screenX = 2;
+                screenY += (8*fontScale);
+                screenX = 0;
             } break;
             case '\r': {
                 screenX = 0;

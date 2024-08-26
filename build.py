@@ -212,7 +212,7 @@ def buildKernel(kernel_dir: str):
         elif getExtension(file) == "cc":
             code = buildCXX(file)
         else:
-            print(f"Invalid or unhandled extension {getExtension(file)}")
+            print(f"Invalid or unhandled extension `{getExtension(file)}`")
             exit(1)
 
         for incPath in CONFIG["INCPATHS"]:

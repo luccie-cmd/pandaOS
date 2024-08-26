@@ -1,5 +1,6 @@
 #include <cstddef>
 #include <cstdio>
+#include <dbg/dbg.h>
 #include "decompiler.h"
 
 // ANSI escape codes for colors
@@ -40,13 +41,13 @@ void DecompilerDecompileAtRIPRange(xed_decoded_inst_t* significant_instruction, 
             // Handle GENERAL_ERROR by incrementing RIP by one
             ++start;
             ++current_rip;
-            std::printf(YELLOW_COLOR "Skipped address 0x%llx due to GENERAL_ERROR\n" RESET_COLOR, current_rip - 1);
+            dbg::printf(YELLOW_COLOR "Skipped address 0x%llx due to GENERAL_ERROR\n" RESET_COLOR, current_rip - 1);
             continue;
         }
         else if (xed_error != XED_ERROR_NONE)
         {
             // For other errors, print the error message and stop
-            std::printf(RED_COLOR "Failed to decode instruction at 0x%llx: %s\n" RESET_COLOR, current_rip, xed_error_enum_t2str(xed_error));
+            dbg::printf(RED_COLOR "Failed to decode instruction at 0x%llx: %s\n" RESET_COLOR, current_rip, xed_error_enum_t2str(xed_error));
             break;
         }
 
@@ -62,12 +63,12 @@ void DecompilerDecompileAtRIPRange(xed_decoded_inst_t* significant_instruction, 
         {
             *significant_instruction = xedd;
             // Print the instruction with '\t->' to indicate it's at the RIP
-            std::printf(GREEN_COLOR "  -> 0x%llx: %s\n" RESET_COLOR, current_rip, buffer);
+            dbg::printf(GREEN_COLOR "  -> 0x%llx: %s\n" RESET_COLOR, current_rip, buffer);
         }
         else
         {
             // Print the instruction without special indication
-            std::printf(YELLOW_COLOR "0x%llx: %s\n" RESET_COLOR, current_rip, buffer);
+            dbg::printf(YELLOW_COLOR "0x%llx: %s\n" RESET_COLOR, current_rip, buffer);
         }
 
         // Move to the next instruction
