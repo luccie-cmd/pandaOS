@@ -72,10 +72,8 @@ namespace hal::idt{
         if(regs->interrupt_number < 32){
             xed_decoded_inst_t xedd;
             DecompilerDecompileAtRIPRange(&xedd, (const uint8_t*)regs->rip, 32, 32);
-            std::printf("ERROR: %s\n", exceptions[regs->interrupt_number]);
-            while(1){}
+            std::error("%s\n", exceptions[regs->interrupt_number]);
         }
-        std::printf("TODO: Handle int %ld with code %ld\n", regs->interrupt_number, regs->error_code);
-        while(1){}
+        std::error("TODO: Handle int %ld with code %ld\n", regs->interrupt_number, regs->error_code);
     }
 };
