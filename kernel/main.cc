@@ -21,7 +21,6 @@ void AbiCallCtors()
 }
 
 extern "C" void KernelInit(){
-    dbg::print("Booted OS\n");
     io::cli();
     framebuffer::init();
     framebuffer::printInfo();
