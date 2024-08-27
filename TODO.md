@@ -1,0 +1,21 @@
+- [ ] VFS
+    - [ ] Disk
+        - [ ] Operation 
+            - [ ] SATA
+        - [ ] Types
+            - [ ] GPT
+                - [ ] Protective MBR
+                - [ ] Partitions
+                    - [ ] Header
+                    - [ ] Data
+            - [ ] MBR
+                - [ ] TODO: Fill out these fields
+    - [ ] File systems
+        - [ ] FAT
+            - [ ] FAT32
+            - [ ] FAT16
+            - [ ] FAT12
+        - [ ] EXT
+            - [ ] EXT2
+            - [ ] EXT3
+            - [ ] EXT4
