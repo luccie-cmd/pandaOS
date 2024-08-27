@@ -6,7 +6,6 @@
 #include <hal/gdt/gdt.h>
 #include <hal/idt/idt.h>
 #include <hal/irq/irq.h>
-#include <cstring>
 #include <acpi/acpi.h>
 
 extern void (*__init_array[])();
