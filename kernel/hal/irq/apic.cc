@@ -18,7 +18,7 @@ namespace hal::irq{
         apic_base += mmu::getHHDM();
         apicWrite(LAPIC_SPURIOUS_INTERRUPT_VECTOR_REGISTER, 0x1FF);
         apicWrite(LAPIC_TASK_PRIORITY_REGISTER, 0); // Allow them all.
-        apicWrite(LAPIC_LVT_TIMER_REGISTER, 0x20 | (1 << 17)); // Allow timer
+        // apicWrite(LAPIC_LVT_TIMER_REGISTER, 0x20 | (1 << 17)); // Allow timer
         std::printf("  APIC:\n\tBase: %lx\n", apic_base);
     }
 };
