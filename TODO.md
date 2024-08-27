@@ -19,3 +19,32 @@
             - [ ] EXT2
             - [ ] EXT3
             - [ ] EXT4
+
+- [ ] Syscalls
+    - [ ] Parse /boot/syscall.tbl
+    - [ ] Disk
+        - [ ] Files
+            - [ ] Read
+            - [ ] Write
+            - [ ] Open
+            - [ ] Close
+        - [ ] Directories
+            - [ ] Mkdir
+            - [ ] Rmdir
+            - [ ] Chdir
+    - [ ] GFX
+        - [ ] ReadPixel
+        - [ ] WritePixel
+        - [ ] WriteCharacter
+        - [ ] WriteString
+        - [ ] SetColor
+        - [ ] ResetColor (Added for simplicity to reset it to the default color instead of the user having to read it and save it)
+        - [ ] ReadColor
+    - [ ] Process
+        - [ ] Fork
+        - [ ] Kill
+        - [ ] Exec
+    - [ ] Memory
+        - [ ] Map
+        - [ ] Unmap
+        - [ ] Brk
