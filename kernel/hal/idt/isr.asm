@@ -56,18 +56,18 @@ isrCommon:
     lea rdi, [rsp]   ; Address of the saved registers
     call handleInt
 
-    pop rax
-    mov cr3, rax
+    pop rbx
+    mov cr3, rbx
 
-    xor rax, rax
-    pop rax
-    mov gs, ax
-    pop rax
-    mov fs, ax
-    pop rax
-    mov es, ax
-    pop rax
-    mov ds, ax
+    xor rbx, rbx
+    pop rbx
+    mov gs, bx
+    pop rbx
+    mov fs, bx
+    pop rbx
+    mov es, bx
+    pop rbx
+    mov ds, bx
 
     pop r15
     pop r14
@@ -84,7 +84,6 @@ isrCommon:
     pop rdx
     pop rcx
     pop rbx
-    pop rax
 
-    add rsp, 16
+    add rsp, 24
     iretq

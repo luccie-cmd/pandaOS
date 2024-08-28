@@ -44,6 +44,6 @@ namespace idt{
     void enableGate(uint8_t idx);
     void initGates();
     void registerHandler(uint8_t idx, void* function, uint8_t type);
-    extern "C" void handleInt(io::Registers* regs);
+    extern "C" uint64_t handleInt(io::Registers* regs);
 };
 };

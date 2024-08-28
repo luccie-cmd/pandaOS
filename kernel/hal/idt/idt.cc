@@ -69,12 +69,13 @@ namespace hal::idt{
     void enableGate(uint8_t idx){
         idtEntries[idx].present = 1;
     }
-    extern "C" void handleInt(io::Registers* regs){
+    extern "C" uint64_t handleInt(io::Registers* regs){
         if(regs->interrupt_number < 32){
             xed_decoded_inst_t xedd;
             DecompilerDecompileAtRIPRange(&xedd, (const uint8_t*)regs->rip, 32, 32);
             std::error("%s\n", exceptions[regs->interrupt_number]);
         }
         std::error("TODO: Handle int %ld with code %ld\n", regs->interrupt_number, regs->error_code);
+        return 0;
     }
 };
