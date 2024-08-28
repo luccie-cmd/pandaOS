@@ -21,7 +21,6 @@ void AbiCallCtors()
 }
 
 extern "C" void KernelInit(){
-    io::cli();
     framebuffer::init();
     framebuffer::printInfo();
     mmu::init();

@@ -104,7 +104,7 @@ namespace mmu{
     void freeMemory(void* ptr);
     void heapExtend(std::size_t pages);
     void heapCoalesceBlocks();
-    uint64_t allocateVmm(std::size_t size);
+    uint64_t allocateVirtualMemory(std::size_t size);
     limine_memmap_entry** retrieveMemoryMap();
     uint64_t retrieveMemoryMapEntryCount();
 };

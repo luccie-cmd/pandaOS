@@ -3,6 +3,7 @@
 #include <dbg/dbg.h>
 #include <fb/fb.h>
 #include <mmu/mmu.h>
+#include <cstring>
 
 namespace test{
     void runAll(){
@@ -81,7 +82,8 @@ namespace test{
         if(addr1 == nullptr || addr2 == nullptr || addr3 == nullptr){
             return {"Heap failed to return a valid address", false};
         }
-        addr1 = (void*)"Hello, This is really long but i don't care i have enough memory\0";
+        std::memcpy(addr1, "Hello\0", strlen("Hello")+1);
+        dbg::printf("%lx %lx %lx\n", addr1, addr2, addr3);
         mmu::freeMemory(addr2);
         mmu::freeMemory(addr1);
         mmu::freeMemory(addr3);

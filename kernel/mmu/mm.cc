@@ -460,7 +460,7 @@
             io::invalCache((void*)virtAddr);
             return true;
         }
-        uint64_t allocateVmm(std::size_t size){
+        uint64_t allocateVirtualMemory(std::size_t size){
             VmFreelist* prev = nullptr;
             VmFreelist* current = freelist_head;
 

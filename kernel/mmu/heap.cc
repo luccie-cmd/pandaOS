@@ -22,7 +22,7 @@ namespace mmu{
         {
             std::error("Invalid memory parameters.\n");
         }
-        vmm_base = (void*)allocateVmm(vmm_max);
+        vmm_base = (void*)allocateVirtualMemory(vmm_max);
         if (!vmm_base)
         {
             std::error("Failed to allocate virtual memory.\n");
@@ -75,7 +75,6 @@ namespace mmu{
                     current->length = allignedLength;
                 }
                 current->is_allocated = true;
-                dbg::printf("Current ADDR = %lx\n", current);
                 return reinterpret_cast<void*>(reinterpret_cast<uint8_t*>(current)+sizeof(HeapBlock));
             }
             current = current->next;
@@ -86,7 +85,6 @@ namespace mmu{
     }
     void freeMemory(void* ptr){
         if (!ptr) return;
-        dbg::printf("Freeing %lx\n", ptr);
 
         // Get the block associated with the pointer
         HeapBlock* block = reinterpret_cast<HeapBlock*>(reinterpret_cast<uint8_t*>(ptr) - sizeof(HeapBlock));
