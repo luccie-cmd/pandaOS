@@ -5,20 +5,20 @@ extern handleInt
     isrHandler%1:
         push qword 0 ; dummy error code
         push qword %1 ; interrupt number
-        jmp HalISRCommon
+        jmp isrCommon
 %endmacro
 
 %macro ISR_ERRORCODE 1
     global isrHandler%1:
     isrHandler%1:
         push qword %1 ; interrupt number
-        jmp HalISRCommon
+        jmp isrCommon
 %endmacro
 
 %include 'kernel/hal/idt/isr.inc'
 
-global HalISRCommon
-HalISRCommon:
+global isrCommon
+isrCommon:
     push rax
     push rbx
     push rcx
