@@ -55,11 +55,12 @@ namespace std{
 }
 
 extern "C" {
-    void fprintf(void* stream, const char* fmt, ...){
+    int fprintf(void* stream, const char* fmt, ...){
         (void)stream;
         va_list args;
         va_start(args, fmt);
         std::vprintf(fmt, args);
         va_end(args);
+        return 0;
     }
 }

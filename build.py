@@ -94,7 +94,7 @@ if OLD_CONFIG != CONFIG:
     force_rebuild = True
     print("Configuration changed, rebuilding...")
 # Add some default values to the config
-CONFIG["CFLAGS"] = ['-Werror', '-c', '-mno-avx512f', '-ffreestanding', '-nostdlib', '-finline-functions', '-fno-pic', '-mno-red-zone', '-fno-stack-protector', '-fno-lto', '-fno-stack-check', '-mno-avx', '-Wall', '-Wextra']
+CONFIG["CFLAGS"] = ['-Werror', '-c', '-mno-avx512f', '-finline-functions', '-fno-pic', '-mno-red-zone', '-fno-stack-protector', '-fno-lto', '-fno-stack-check', '-mno-avx', '-Wall', '-Wextra']
 CONFIG["INCPATHS"] = ['-Ixed', '-Iklibc']
 CONFIG["CXXFLAGS"] = ['-fno-rtti', '-fno-exceptions']
 CONFIG["ASFLAGS"] = ['-felf64']

@@ -13,5 +13,5 @@ namespace std{
 }
 
 extern "C" {
-    void fprintf(void* stream, const char* fmt, ...);
+    int fprintf(void* stream, const char* fmt, ...);
 }

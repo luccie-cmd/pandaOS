@@ -1,7 +1,5 @@
 #pragma once
 #include <cstdint>
-#undef _GLIBCXX_HOSTED
-#define _GLIBCXX_HOSTED 1
 #include <functional>
 
 namespace acpi{
