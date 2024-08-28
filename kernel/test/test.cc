@@ -83,7 +83,6 @@ namespace test{
             return {"Heap failed to return a valid address", false};
         }
         std::memcpy(addr1, "Hello\0", strlen("Hello")+1);
-        dbg::printf("%lx %lx %lx\n", addr1, addr2, addr3);
         mmu::freeMemory(addr2);
         mmu::freeMemory(addr1);
         mmu::freeMemory(addr3);
