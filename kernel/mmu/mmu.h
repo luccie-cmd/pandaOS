@@ -101,7 +101,7 @@ namespace mmu{
     pml4* getPML4();
     bool mapMemory(pml4* pml4e, uint64_t virtAddr, uint64_t physAddr, int prot, int flags);
     void* allocateMemory(std::size_t size);
-    void freeMemoryHeap(void* ptr);
+    void freeMemory(void* ptr);
     void heapExtend(std::size_t pages);
     void heapCoalesceBlocks();
     uint64_t allocateVmm(std::size_t size);

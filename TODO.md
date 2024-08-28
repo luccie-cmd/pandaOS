@@ -21,6 +21,8 @@
             - [ ] EXT4
 
 - [ ] Syscalls
+                        // NOTE: 0xB7 has no real meaning, just decided on it.
+    - [ ] Add ISR Entry (interrupt 0xB7)
     - [ ] Parse /boot/syscall.tbl
     - [ ] Disk
         - [ ] Files
@@ -48,3 +50,45 @@
         - [ ] Map
         - [ ] Unmap
         - [ ] Brk
+
+- [ ] Run tests
+    - [x] Dbg
+    - [x] Fb
+    - [x] Mmu
+        - [x] Free
+            - [x] Page(s)
+            - [x] Virtual Address(es)
+            - [x] Heap
+        - [x] Allocate
+            - [x] Page(s)
+            - [x] Virtual Address(es)
+            - [x] Heap
+    - [ ] Acpi
+        - [ ] Grab tables
+    - [ ] Irq
+        - [ ] Test APIC
+    - [ ] Vfs
+        - [ ] Read a test file
+            - [ ] Open
+            - [ ] Read
+            - [ ] Close
+    - [ ] Pci
+        - [ ] Read devices and print vendor ID
+    - [ ] Syscall
+        - [ ] Execute some important syscalls
+            - [ ] mmap
+            - [ ] unmap
+            - [ ] read file
+                - [ ] Open
+                - [ ] Read
+                - [ ] Close
+            - [ ] fork
+            - [ ] kill
+            - [ ] exec
+            - [ ] gfx
+                - [ ] printstr
+                - [ ] printchr
+                - [ ] set/reset color
+    - [ ] Tss
+        - [ ] Run test program
+        - [ ] Run system services

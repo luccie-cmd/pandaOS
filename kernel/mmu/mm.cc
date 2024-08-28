@@ -54,7 +54,7 @@
 
         SAFreelist* new_block = reinterpret_cast<SAFreelist*>(new_head_ptr);
         new_block->next = head;
-        new_block->size = 4096;
+        new_block->size = PAGE_SIZE;
 
         head = new_block;
 
@@ -245,14 +245,14 @@
             FreeListEntry* current = head;
 
             while (current != nullptr){
-                if (current->length >= 4096){
+                if (current->length >= PAGE_SIZE){
                     // Allocate the page
                     uintptr_t allocated_address = reinterpret_cast<uintptr_t>(current);
 
                     // If the block is larger than a page, reduce its size
-                    if (current->length > 4096){
-                        FreeListEntry* new_entry = reinterpret_cast<FreeListEntry*>(allocated_address + 4096);
-                        new_entry->length = current->length - 4096;
+                    if (current->length > PAGE_SIZE){
+                        FreeListEntry* new_entry = reinterpret_cast<FreeListEntry*>(allocated_address + PAGE_SIZE);
+                        new_entry->length = current->length - PAGE_SIZE;
                         new_entry->next = current->next;
 
                         if (previous != nullptr){
@@ -289,7 +289,7 @@
         void freePage(uint64_t addr){
             uintptr_t base = reinterpret_cast<uintptr_t>(makeVirtual(addr));
             FreeListEntry* dealloc_entry = reinterpret_cast<FreeListEntry*>(base);
-            dealloc_entry->length = 4096; // Assuming pages are always 4096 bytes
+            dealloc_entry->length = PAGE_SIZE; // Assuming pages are always PAGE_SIZE bytes
 
             FreeListEntry* current = head;
             FreeListEntry* previous = nullptr;
@@ -379,21 +379,21 @@
 
             if (pml4e[va.pml4e].pdpe_ptr == 0) {
                 uint64_t p = allocatePage();
-                std::memset(reinterpret_cast<uint8_t*>(makeVirtual(p)), 0, 4096);
+                std::memset(reinterpret_cast<uint8_t*>(makeVirtual(p)), 0, PAGE_SIZE);
                 pml4e[va.pml4e].pdpe_ptr = (uint64_t)p >> 12;
             }
 
             pdpe* pdpe = reinterpret_cast<struct pdpe*>(makeVirtual(pml4e[va.pml4e].pdpe_ptr << 12));
             if (pdpe[va.pdpe].pde_ptr == 0) {
                 uint64_t p = allocatePage();
-                std::memset(reinterpret_cast<uint8_t*>(makeVirtual(p)), 0, 4096);
+                std::memset(reinterpret_cast<uint8_t*>(makeVirtual(p)), 0, PAGE_SIZE);
                 pdpe[va.pdpe].pde_ptr = (uint64_t)p >> 12;
             }
 
             pde* pde =  reinterpret_cast<struct pde*>(makeVirtual(pdpe[va.pdpe].pde_ptr << 12));
             if (pde[va.pde].pte_ptr == 0) {
                 uint64_t p = allocatePage();
-                std::memset(reinterpret_cast<uint8_t*>(makeVirtual(p)), 0, 4096);
+                std::memset(reinterpret_cast<uint8_t*>(makeVirtual(p)), 0, PAGE_SIZE);
                 pde[va.pde].pte_ptr = (uint64_t)p >> 12;
             }
 
@@ -467,7 +467,7 @@
             while (current != nullptr)
             {
                 // Calculate the aligned base address within the current block
-                uint64_t aligned_base_address = (current->base_address + (4096 - 1)) & ~(4096 - 1);
+                uint64_t aligned_base_address = (current->base_address + (PAGE_SIZE - 1)) & ~(PAGE_SIZE - 1);
 
                 // Calculate the end address of the requested block
                 uint64_t end_address = aligned_base_address + size;

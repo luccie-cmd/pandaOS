@@ -7,6 +7,7 @@
 #include <hal/idt/idt.h>
 #include <hal/irq/irq.h>
 #include <acpi/acpi.h>
+#include <test/test.h>
 
 extern void (*__init_array[])();
 extern void (*__init_array_end[])();
@@ -25,6 +26,7 @@ extern "C" void KernelInit(){
     framebuffer::printInfo();
     mmu::init();
     mmu::printInfo();
+    test::runMMU();
     hal::gdt::init();
     hal::idt::init();
     io::sti();
@@ -34,7 +36,8 @@ extern "C" void KernelInit(){
     std::error("Implement VFS\n");
     std::error("Implement PCI\n");
     AbiCallCtors();
-    std::error("Implement SYSCALLS\n");
+    std::error("Implement SYSCALLS\n"); 
     std::error("Implement TSS\n");
+    test::runAll();
     for(;;);
 }

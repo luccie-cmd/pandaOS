@@ -1,6 +1,7 @@
 #include "mmu.h"
 #include <cstdio>
 #include <dbg/dbg.h>
+#include <io/io.h>
 
 namespace mmu{
     struct alignas(16) HeapBlock
@@ -17,7 +18,7 @@ namespace mmu{
     void init_heap(std::size_t p_pmm_size, std::size_t p_vmm_max){
         pmm_size = p_pmm_size;
         vmm_max = p_vmm_max;
-        if (pmm_size > vmm_max || (pmm_size % 4096) != 0)
+        if (pmm_size > vmm_max || (pmm_size % PAGE_SIZE) != 0)
         {
             std::error("Invalid memory parameters.\n");
         }
@@ -74,6 +75,7 @@ namespace mmu{
                     current->length = allignedLength;
                 }
                 current->is_allocated = true;
+                dbg::printf("Current ADDR = %lx\n", current);
                 return reinterpret_cast<void*>(reinterpret_cast<uint8_t*>(current)+sizeof(HeapBlock));
             }
             current = current->next;
@@ -82,15 +84,93 @@ namespace mmu{
         heapExtend(1);
         return allocateMemory(allignedLength);
     }
-    void freeMemoryHeap(void* ptr){
-        (void)ptr;
-        std::error("TODO: %s", __PRETTY_FUNCTION__);
-    }
+    void freeMemory(void* ptr){
+        if (!ptr) return;
+        dbg::printf("Freeing %lx\n", ptr);
+
+        // Get the block associated with the pointer
+        HeapBlock* block = reinterpret_cast<HeapBlock*>(reinterpret_cast<uint8_t*>(ptr) - sizeof(HeapBlock));
+        block->is_allocated = false;
+
+        // Coalesce free blocks if possible
+        heapCoalesceBlocks();
+    }   
     void heapExtend(std::size_t pages){
         (void)pages;
-        std::error("TODO: %s", __PRETTY_FUNCTION__);
+        std::error("TODO Heap extend\n");
+        // std::size_t new_pmem_size = pmm_size + pages * 4096;
+
+        // if (new_pmem_size > vmm_max)
+        // {
+        //     dbg::printf("Heap out of virtual memory %d %llx > %llx\n", (uint32_t)pages, (new_pmem_size), (vmm_max));
+        //     io::halt();
+        // }
+
+        // for (std::align_val_t pg_off = pmem_size; pg_off < new_pmem_size; pg_off += 4096)
+        // {
+        //     auto pg_paddr = MmAllocatePage();
+        //     if (pg_paddr == 0)
+        //     {
+        //         DbgPrint("Failed to allocate physical page.\n");
+        //         IoHaltProcessor();
+        //     }
+
+        //     auto status = MmMapPage(
+        //             MmGetKernelPML4(),
+        //             reinterpret_cast<uint64_t>(vmem_base) + pg_off,
+        //             (uint64_t) pg_paddr,
+        //             PROTECTION_KERNEL | PROTECTION_RW,
+        //             MAP_GLOBAL | MAP_PRESENT
+        //     );
+
+        //     if (status != MAP_SUCCESS)
+        //     {
+        //         DbgPrint("Failed to map heap pages during extension.\n");
+        //         IoHaltProcessor();
+        //     }
+        // }
+
+        // pmem_size = new_pmem_size;
+
+        // // Add the newly allocated memory to the free list
+        // HeapBlock* new_block = reinterpret_cast<HeapBlock*>(
+        //         reinterpret_cast<uint8_t*>(vmem_base) + pmem_size - pages * 4096
+        // );
+
+        // new_block->length = pages * 4096 - sizeof(HeapBlock);
+        // new_block->is_allocated = false;
+        // new_block->next = nullptr;
+
+        // HeapBlock* current = free_list;
+        // while (current->next)
+        // {
+        //     current = current->next;
+        // }
+
+        // current->next = new_block;
+        // new_block->prev = current;
+
+        // // Coalesce blocks after extension
+        // heapCoalesceBlocks();
     }
     void heapCoalesceBlocks(){
-        std::error("TODO: %s", __PRETTY_FUNCTION__);
+        HeapBlock* current = freeList;
+        while (current && current->next)
+        {
+            if (!current->is_allocated && !current->next->is_allocated)
+            {
+                current->length += sizeof(HeapBlock) + current->next->length;
+                current->next = current->next->next;
+
+                if (current->next)
+                {
+                    current->next->prev = current;
+                }
+            }
+            else
+            {
+                current = current->next;
+            }
+        }
     }
 }

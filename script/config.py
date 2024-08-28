@@ -1,6 +1,6 @@
 config : 'debug'
 arch : 'x64'
-compiler : 'clang'
+compiler : 'gcc'
 imageFS : 'fat32'
 imageSize : '128m'
 outDir : 'out'
