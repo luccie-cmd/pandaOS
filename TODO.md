@@ -1,4 +1,9 @@
 - [ ] VFS
+    - [ ] Reading
+    - [ ] Writing
+    - [ ] Closing
+    - [ ] Opening
+    - [ ] Seeking
     - [ ] Disk
         - [ ] Operation 
             - [ ] SATA
