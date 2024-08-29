@@ -14,7 +14,7 @@
                     - [ ] Header
                     - [ ] Data
             - [ ] MBR
-                - [ ] TODO: Fill out these fields
+                - [ ] Read it
     - [ ] File systems
         - [ ] FAT
             - [ ] FAT32
@@ -55,6 +55,16 @@
         - [ ] Map
         - [ ] Unmap
         - [ ] Brk
+
+- [ ] Tss
+    - [ ] Load a program
+        - [ ] Read it
+        - [ ] Verify it's an ELF binary
+            - [ ] Check magic bytes
+            - [ ] Check endianess
+            - [ ] Check architecture
+            - [ ] Check     
+    - [ ] Execute a program
 
 - [ ] Run tests
     - [x] Dbg

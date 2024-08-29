@@ -25,7 +25,6 @@ extern "C" void KernelInit(){
     framebuffer::printInfo();
     mmu::init();
     mmu::printInfo();
-    test::runMMU();
     hal::gdt::init();
     hal::idt::init();
     io::sti();
