@@ -94,11 +94,11 @@ if OLD_CONFIG != CONFIG:
     force_rebuild = True
     print("Configuration changed, rebuilding...")
 # Add some default values to the config
-CONFIG["CFLAGS"] = ['-Werror', '-nostdlib', '-c', '-mno-avx512f', '-D_GLIBCXX_HOSTED', '-finline-functions', '-fno-pic', '-mno-red-zone', '-fno-stack-protector', '-fno-lto', '-fno-stack-check', '-mno-avx', '-Wall', '-Wextra']
+CONFIG["CFLAGS"] = ['-Werror', '-nostdlib', '-c', '-mno-avx512f', '-ffreestanding', '-D_GLIBCXX_HOSTED=1', '-finline-functions', '-fPIC', '-mno-red-zone', '-fno-stack-protector', '-fno-lto', '-fno-stack-check', '-mno-avx', '-Wall', '-Wextra']
 CONFIG["INCPATHS"] = ['-Ixed', '-Iklibc']
 CONFIG["CXXFLAGS"] = ['-fno-rtti', '-fno-exceptions']
 CONFIG["ASFLAGS"] = ['-felf64']
-CONFIG["LDFLAGS"] = ['-nostdlib', '-no-pie']
+CONFIG["LDFLAGS"] = ['-nostdlib', '-PIC']
 if "imageSize" not in CONFIG:
     CONFIG["imageSize"] = '128m'
 
@@ -190,7 +190,11 @@ def buildKernel(kernel_dir: str):
         str_paths = ""
         for incPath in CONFIG["INCPATHS"]:
             str_paths += f" {incPath}"
-        callCmd(f"cpp {str_paths} {file} -o ./tmp.txt")
+        
+        code, _ = callCmd(f"cpp {str_paths} -D_GLIBCXX_HOSTED=1 {file} -o ./tmp.txt", True)
+        if code != 0:
+            print(f"CPP failed to pre process {file}")
+            exit(code)
         if not force_rebuild and compareFiles("./tmp.txt", os.path.abspath(f"/tmp/{basename}/cache/{file}")):
             continue
         callCmd(f"mkdir -p {CONFIG['outDir'][0]}/{os.path.dirname(file)}")
