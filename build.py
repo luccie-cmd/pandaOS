@@ -66,7 +66,7 @@ CONFIG = readConfig("./script/config.py")
 OLD_CONFIG = readConfig("./script/config.py.old")
 ALLOWED_CONFIG = [
     ["config", ["release", "debug"], True],
-    ["arch", ["x86", "x64"], True],
+    ["arch", ["x64"], True],
     ["compiler", ["gcc", "clang"], True],
     ["imageFS", ["fat32"], True],
     ["bootloader", ["limine-uefi", "bios", "multiboot2"], True],
@@ -94,11 +94,11 @@ if OLD_CONFIG != CONFIG:
     force_rebuild = True
     print("Configuration changed, rebuilding...")
 # Add some default values to the config
-CONFIG["CFLAGS"] = ['-Werror', '-c', '-mno-avx512f', '-finline-functions', '-fno-pic', '-mno-red-zone', '-fno-stack-protector', '-fno-lto', '-fno-stack-check', '-mno-avx', '-Wall', '-Wextra']
+CONFIG["CFLAGS"] = ['-Werror', '-nostdlib', '-c', '-mno-avx512f', '-D_GLIBCXX_HOSTED', '-finline-functions', '-fno-pic', '-mno-red-zone', '-fno-stack-protector', '-fno-lto', '-fno-stack-check', '-mno-avx', '-Wall', '-Wextra']
 CONFIG["INCPATHS"] = ['-Ixed', '-Iklibc']
 CONFIG["CXXFLAGS"] = ['-fno-rtti', '-fno-exceptions']
 CONFIG["ASFLAGS"] = ['-felf64']
-CONFIG["LDFLAGS"] = ['-nostdlib', '-mno-avx512f', '-ffreestanding', '-fno-lto', '-no-pie', '-lgcc', '-mno-red-zone', '-fno-stack-protector', '-fno-stack-check', '-mno-avx', '-fno-rtti', '-fno-exceptions']
+CONFIG["LDFLAGS"] = ['-nostdlib', '-no-pie']
 if "imageSize" not in CONFIG:
     CONFIG["imageSize"] = '128m'
 
@@ -113,20 +113,11 @@ if "yes" in CONFIG.get("mt19937"):
     CONFIG["CFLAGS"] += ["-DMT19937"]
 if "x64" in CONFIG.get("arch"):
     CONFIG["CFLAGS"] += ["-m64"]
-    CONFIG["CFLAGS"] += ["-mcmodel=kernel"]
-elif "x86" in CONFIG.get("arch"):
-    CONFIG["CFLAGS"] += ["-m32"]
 
 if "debug" in CONFIG.get("config"):
     CONFIG["LDFLAGS"] += ["-O0"]
-    CONFIG["LDFLAGS"] += ["-g"]
 else:
     CONFIG["LDFLAGS"] += ["-O2"]
-if "x64" in CONFIG.get("arch"):
-    CONFIG["LDFLAGS"] += ["-m64"]
-    CONFIG["LDFLAGS"] += ["-mcmodel=kernel"]
-elif "x86" in CONFIG.get("arch"):
-    CONFIG["LDFLAGS"] += ["-m32"]
 
 def callCmd(command, print_out=False):
     with open("commands.txt", "a") as f:
@@ -226,10 +217,7 @@ def buildKernel(kernel_dir: str):
 
 def linkKernel(kernel_dir, linker_file, libc_file, lib_dir="./lib"):
     files = glob.glob(kernel_dir+'/**', recursive=True)
-    command = CONFIG["compiler"][0]
-    if command == "gcc":
-        command = "g"
-    command += "++"
+    command = "ld"
     options = CONFIG["LDFLAGS"]
     for option in options:
         command += " " + option
@@ -239,19 +227,19 @@ def linkKernel(kernel_dir, linker_file, libc_file, lib_dir="./lib"):
         if not checkExtension(file, ["o"]):
             continue
         command += " " + file
-    command += f" -Wl,-T {linker_file}"
-    command += " -Wl,--no-whole-archive"
-    command += " -Wl,--whole-archive"
+    command += f" -T {linker_file}"
+    command += " --no-whole-archive"
+    command += " --whole-archive"
     command += f" {libc_file}"
     if CONFIG["config"][0] == "debug":
-        command += f" -Wl,-Map={CONFIG['outDir'][0]}/kernel.map"
+        command += f" -Map={CONFIG['outDir'][0]}/kernel.map"
     lib_files = glob.glob(lib_dir+'/**')
     for file in lib_files:
         if getExtension(file) == 'a':
             command += f" {file}"
     command += f" -o {CONFIG['outDir'][0]}/kernel.elf"
     callCmd(command, True)
-    callCmd(f"strip -s -g -x -X {CONFIG['outDir'][0]}/kernel.elf -o {CONFIG['outDir'][0]}/kernel.elf")
+    callCmd(f"strip -g -s -x -X {CONFIG['outDir'][0]}/kernel.elf -o {CONFIG['outDir'][0]}/kernel.elf")
 
 def makeImageFile(out_file):
     size = parseSize(CONFIG["imageSize"][0])
